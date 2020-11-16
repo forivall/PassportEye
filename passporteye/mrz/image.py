@@ -177,8 +177,8 @@ class ExtractAllBoxes(object):
     __provides__ = ['rois']
     __depends__ = ['boxes', 'img', 'img_small', 'scale_factor']
 
-    def __call__(self, boxes: List[RotatedBox], img: ndarray, img_small: ndarray, scale_factor: float):
-        rois: list[ndarray] = []
+    def __call__(self, boxes, img, img_small, scale_factor):
+        rois = []
         scale = 1.0 / scale_factor
 
         for box in boxes:
@@ -382,11 +382,11 @@ class ROIPipeline(Pipeline):
         self.add_component('extractor', ExtractAllBoxes())
 
     @property
-    def result(self) -> list[ndarray]:
+    def result(self):
         return self['rois']
 
 
-def extract_rois(file: str) -> list[ndarray]:
+def extract_rois(file: str):
     """The main interface function to this module, encapsulating the recognition pipeline.
        Given an image filename, runs MRZPipeline on it, returning the parsed MRZ object.
 
