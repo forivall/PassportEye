@@ -15,6 +15,7 @@ import shutil
 import sys
 import time
 from collections import Counter
+from typing import Tuple
 import pkg_resources
 from skimage import io
 from pytesseract.pytesseract import TesseractNotFoundError, TesseractError
@@ -22,7 +23,7 @@ import passporteye
 from .image import read_mrz
 
 
-def process_file(params):
+def process_file(params: Tuple[str, bool, str]):
     """
     Processes a file and returns the parsed MRZ (or None if no candidate regions were even found).
 

@@ -9,6 +9,7 @@ from sklearn.decomposition import PCA
 from matplotlib import pyplot as plt
 from matplotlib import patches
 from skimage import transform
+from .types import ndarray
 
 
 class RotatedBox(object):
@@ -116,7 +117,7 @@ class RotatedBox(object):
         ax.add_patch(p)
         return p
 
-    def extract_from_image(self, img, scale=1.0, margin_width=5, margin_height=5):
+    def extract_from_image(self, img: ndarray, scale: float=1.0, margin_width: float=5, margin_height: float=5) -> ndarray:
         """Extracts the contents of this box from a given image.
         For that the image is "unrotated" by the appropriate angle, and the corresponding part is extracted from it.
 

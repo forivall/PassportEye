@@ -6,6 +6,7 @@ Author: Konstantin Tretyakov
 License: MIT
 '''
 import io
+from typing import List
 import numpy as np
 from skimage import transform, morphology, filters, measure
 from skimage import io as skimage_io # So as not to clash with builtin io
@@ -13,6 +14,7 @@ from ..util.pdf import extract_first_jpeg_in_pdf
 from ..util.pipeline import Pipeline
 from ..util.geometry import RotatedBox
 from ..util.ocr import ocr
+from ..util.types import ndarray
 from .text import MRZ
 
 
@@ -27,7 +29,7 @@ class Loader(object):
         self.as_gray = as_gray
         self.pdf_aware = pdf_aware
 
-    def _imread(self, file):
+    def _imread(self, file) -> ndarray:
         """Proxy to skimage.io.imread with some fixes."""
         # For now, we have to select the imageio plugin to read image from byte stream
         # When ski-image v0.15 is released, imageio will be the default plugin, so this
@@ -63,7 +65,7 @@ class Scaler(object):
     def __init__(self, max_width=250):
         self.max_width = max_width
 
-    def __call__(self, img):
+    def __call__(self, img: ndarray):
         scale_factor = self.max_width / float(img.shape[1])
         if scale_factor <= 1:
             img_small = transform.rescale(img, scale_factor, mode='constant', multichannel=False, anti_aliasing=True)
@@ -109,7 +111,7 @@ class MRZBoxLocator(object):
         self.lineskip_tol = lineskip_tol
         self.box_type = box_type
 
-    def __call__(self, img_binary):
+    def __call__(self, img_binary) -> List[RotatedBox]:
         cs = measure.find_contours(img_binary, 0.5)
 
         # Collect contours into RotatedBoxes
@@ -180,7 +182,7 @@ class FindFirstValidMRZ(object):
     def __init__(self, use_original_image=True, extra_cmdline_params=''):
         self.box_to_mrz = BoxToMRZ(use_original_image, extra_cmdline_params=extra_cmdline_params)
 
-    def __call__(self, boxes, img, img_small, scale_factor, data):
+    def __call__(self, boxes: List[RotatedBox], img: ndarray, img_small: ndarray, scale_factor: float, data: dict):
         mrzs = []
         data['__debug__mrz'] = []
         for i, b in enumerate(boxes):
@@ -210,7 +212,7 @@ class BoxToMRZ(object):
         self.use_original_image = use_original_image
         self.extra_cmdline_params = extra_cmdline_params
 
-    def __call__(self, box, img, img_small, scale_factor):
+    def __call__(self, box: RotatedBox, img: ndarray, img_small: ndarray, scale_factor: float):
         img = img if self.use_original_image else img_small
         scale = 1.0 / scale_factor if self.use_original_image else 1.0
 
@@ -295,7 +297,7 @@ class TryOtherMaxWidth(object):
     def __init__(self, other_max_width=1000):
         self.other_max_width = other_max_width
 
-    def __call__(self, mrz, __pipeline__):
+    def __call__(self, mrz: MRZ, __pipeline__: Pipeline):
         # We'll only try this if we see that img_binary.mean() is very small or img.mean() is very large (i.e. image is mostly white).
         if mrz is None and (__pipeline__['img_binary'].mean() < 0.01 or __pipeline__['img'].mean() > 0.95):
             __pipeline__.replace_component('scaler', Scaler(self.other_max_width))
@@ -321,11 +323,11 @@ class MRZPipeline(Pipeline):
         self.add_component('other_max_width', TryOtherMaxWidth())
 
     @property
-    def result(self):
+    def result(self) -> MRZ:
         return self['mrz_final']
 
 
-def read_mrz(file, save_roi=False, extra_cmdline_params=''):
+def read_mrz(file: str, save_roi: bool=False, extra_cmdline_params: str='') -> MRZ:
     """The main interface function to this module, encapsulating the recognition pipeline.
        Given an image filename, runs MRZPipeline on it, returning the parsed MRZ object.
 
