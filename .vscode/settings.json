@@ -13,11 +13,14 @@
         ".pytest_cache": true,
         "**/*.pyc": true
     },
-    "python.pythonPath": "${workspaceFolder}\\venv3\\Scripts\\python.exe",
-    "python.unitTest.pyTestEnabled": true,
+    // with pyenv, setup with `pyenv virtualenv passporteye`
+    // ln -s ~/.pyenv/versions/passporteye venv3
+    "python.pythonPath": "${workspaceFolder}/venv3/bin/python",
+    "python.testing.pytestEnabled": true,
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.linting.pylintUseMinimalCheckers": false,
-    "python.linting.pylintPath": "${workspaceFolder}\\venv3\\Scripts\\pylint.exe",
+    "python.linting.pylintPath": "${workspaceFolder}/venv3/bin/pylint",
+    // "python.linting.pylintPath": "${workspaceFolder}\\venv3\\Scripts\\pylint.exe",
     // https://github.com/Microsoft/vscode-python/issues/435
 }
