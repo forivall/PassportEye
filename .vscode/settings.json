@@ -16,11 +16,15 @@
     // with pyenv, setup with `pyenv virtualenv passporteye`
     // ln -s ~/.pyenv/versions/passporteye venv3
     "python.pythonPath": "${workspaceFolder}/venv3/bin/python",
+    // alternatively,
+    // "python.pythonPath": "${env:HOME}/.pyenv/versions/passporteye/bin/python"
     "python.testing.pytestEnabled": true,
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.linting.pylintUseMinimalCheckers": false,
     "python.linting.pylintPath": "${workspaceFolder}/venv3/bin/pylint",
+    // alternatively,
+    // "python.linting.pylintPath": "${env:HOME}/.pyenv/versions/passporteye/bin/pylint"
     // "python.linting.pylintPath": "${workspaceFolder}\\venv3\\Scripts\\pylint.exe",
     // https://github.com/Microsoft/vscode-python/issues/435
 }
