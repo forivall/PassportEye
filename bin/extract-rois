@@ -34,7 +34,7 @@ def main():
     if args.ipc:
         line = sys.stdin.readline()
         import json
-        while line and line != 'exit\n':
+        while line and line not in ('exit\n', '"exit"\n'):
             try:
                 lineargv = json.loads(line)
             except json.JSONDecodeError:
@@ -43,8 +43,8 @@ def main():
             if not subargs.verbose:
                 subargs.verbose = args.verbose
             if subargs.ipc:
-                print('you\'re already in ipc mode, silly', file=sys.stderr)
-                print('\{\}')
+                # this is like a simple ping to ensure the worker is responsive
+                print(r'{"status": "OK"}')
                 line = sys.stdin.readline()
                 continue
             run(subargs)
