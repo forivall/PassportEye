@@ -4,6 +4,7 @@ import time
 start_tic = time.time()
 
 import argparse
+import json
 import os
 from os import path
 import sys
@@ -33,7 +34,6 @@ def main():
         print('ready in %f seconds' % (time.time() - start_tic), file=sys.stderr)
     if args.ipc:
         line = sys.stdin.readline()
-        import json
         while line and line not in ('exit\n', '"exit"\n'):
             try:
                 lineargv = json.loads(line)
@@ -44,15 +44,24 @@ def main():
                 subargs.verbose = args.verbose
             if subargs.ipc:
                 # this is like a simple ping to ensure the worker is responsive
-                print(r'{"status": "OK"}')
+                print('{"status": "OK"}')
                 line = sys.stdin.readline()
                 continue
-            run(subargs)
+            files = run(subargs)
             # TODO: add more information if needed
-            print(json.dumps({'filename': subargs.filename, 'roiDir': subargs.roi_dir}))
+            print(json.dumps({
+                'filename': subargs.filename,
+                'roiDir': subargs.roi_dir,
+                'roiFiles': files,
+            }))
             line = sys.stdin.readline()
     else:
-        run(args)
+        files = run(args)
+        print(json.dumps({
+            'filename': args.filename,
+            'roiDir': args.roi_dir,
+            'roiFiles': files,
+        }))
 
 def run(args):
     if args.verbose:
@@ -68,12 +77,16 @@ def run(args):
         roi_dir = args.roi_dir
         os.makedirs(roi_dir, exist_ok=True)
 
+    files = []
     for n, img in enumerate(rois, 1):
         roi_fn = '%d.png' % (n)
-        io.imsave(os.path.join(roi_dir, roi_fn), img)
+        filename = os.path.join(roi_dir, roi_fn)
+        io.imsave(filename, img)
+        files.append(filename)
     if args.verbose:
         tick = time.time()
         print('wrote files in %f seconds' % (tick - tock), file=sys.stderr)
+    return files
 
 if __name__ == '__main__':
     main()
