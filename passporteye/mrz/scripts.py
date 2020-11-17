@@ -19,7 +19,8 @@ import pkg_resources
 from skimage import io
 from pytesseract.pytesseract import TesseractNotFoundError, TesseractError
 import passporteye
-from .image import read_mrz, extract_rois
+from .image import extract_rois
+from .parse import read_mrz
 
 
 def process_file(params):
