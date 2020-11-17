@@ -7,8 +7,6 @@ License: MIT
 from collections import OrderedDict
 import numpy as np
 from sklearn.decomposition import PCA
-from matplotlib import pyplot as plt
-from matplotlib import patches
 from skimage import transform
 
 
@@ -106,6 +104,9 @@ class RotatedBox(object):
         :param kwargs: arguments passed to the matplotlib's `Polygon` patch object. By default, fill is set to False, color to red and lw to 2.
         :return: The created Polygon object.
         """
+        from matplotlib import pyplot as plt
+        from matplotlib import patches
+
         ax = ax or plt.gca()
         poly = self.as_poly()
         if mode == 'image':
