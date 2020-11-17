@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import time
+start_tic = time.time()
+
 import argparse
 import os
 from os import path
@@ -17,14 +20,49 @@ def main():
     Command-line script for extracting MRZ from a given image
     """
     parser = argparse.ArgumentParser(description='Extract MRZ ROIs from the image.')
-    parser.add_argument('filename')
+    filename_or_ipc = parser.add_mutually_exclusive_group(required=True)
+    filename_or_ipc.add_argument('filename', nargs='?')
+    filename_or_ipc.add_argument('--ipc', action="store_true", help="listen on stdin for cli arguments, and run in a loop")
     parser.add_argument('-d', '--roi-dir', default=None,
                         help='Output the region of the image that is detected to contain the MRZ to the given png file. '
                         'With --roi-only, this is a directory, and the files created will be at 1.png, 2.png, ...')
+    parser.add_argument('--verbose', '-v', action='count', default=0)
     args = parser.parse_args()
     
+    if args.verbose:
+        print('ready in %f seconds' % (time.time() - start_tic), file=sys.stderr)
+    if args.ipc:
+        line = sys.stdin.readline()
+        import json
+        while line and line != 'exit\n':
+            try:
+                lineargv = json.loads(line)
+            except json.JSONDecodeError:
+                lineargv = line.split()
+            subargs = parser.parse_args(lineargv)
+            if not subargs.verbose:
+                subargs.verbose = args.verbose
+            if subargs.ipc:
+                print('you\'re already in ipc mode, silly', file=sys.stderr)
+                print('\{\}')
+                line = sys.stdin.readline()
+                continue
+            run(subargs)
+            # TODO: add more information if needed
+            print(json.dumps({'filename': subargs.filename, 'roiDir': subargs.roi_dir}))
+            line = sys.stdin.readline()
+    else:
+        run(args)
 
+def run(args):
+    if args.verbose:
+        tick = time.time()
+        print('extracting...', file=sys.stderr)
     rois = extract_rois(args.filename)
+    if args.verbose:
+        tock = time.time()
+        walltime = tock - tick
+        print('extracted in %f seconds' % walltime, file=sys.stderr)
     roi_dir = '.'
     if args.roi_dir is not None:
         roi_dir = args.roi_dir
@@ -33,6 +71,9 @@ def main():
     for n, img in enumerate(rois, 1):
         roi_fn = '%d.png' % (n)
         io.imsave(os.path.join(roi_dir, roi_fn), img)
+    if args.verbose:
+        tick = time.time()
+        print('wrote files in %f seconds' % (tick - tock), file=sys.stderr)
 
 if __name__ == '__main__':
     main()
