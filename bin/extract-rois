@@ -54,6 +54,7 @@ def main():
                 'roiDir': subargs.roi_dir,
                 'roiFiles': files,
             }))
+            sys.stdout.flush()
             line = sys.stdin.readline()
     else:
         files = run(args)
