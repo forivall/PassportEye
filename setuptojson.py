@@ -27,6 +27,9 @@ class MakePackageJsonCommand(distutils.cmd.Command):
 
             if attr == 'name':
                 value = value.lower()
+            if attr == 'version':
+                # change local version label to a prerelease identifier
+                value = value.replace('+', '-', 1)
             if attr == 'keywords':
                 try:
                     value = [item for s in value for item in s.split()]
