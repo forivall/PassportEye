@@ -27,6 +27,8 @@ def main():
     parser.add_argument('-d', '--roi-dir', default=None,
                         help='Output the region of the image that is detected to contain the MRZ to the given png file. '
                         'With --roi-only, this is a directory, and the files created will be at 1.png, 2.png, ...')
+    parser.add_argument('--id', default=None,
+                        help="return this value in the json result to ensure consisteny")
     parser.add_argument('--verbose', '-v', action='count', default=0)
     args = parser.parse_args()
     
@@ -48,21 +50,21 @@ def main():
                 line = sys.stdin.readline()
                 continue
             files = run(subargs)
-            # TODO: add more information if needed
-            print(json.dumps({
-                'filename': subargs.filename,
-                'roiDir': subargs.roi_dir,
-                'roiFiles': files,
-            }))
+            print(toJson(subargs, files))
             sys.stdout.flush()
             line = sys.stdin.readline()
     else:
         files = run(args)
-        print(json.dumps({
-            'filename': args.filename,
-            'roiDir': args.roi_dir,
-            'roiFiles': files,
-        }))
+        print(toJson(args, files))
+
+def toJson(args, files):
+    # TODO: add more information if needed
+    return json.dumps({
+        'id': args.id,
+        'filename': args.filename,
+        'roiDir': args.roi_dir,
+        'roiFiles': files,
+    })
 
 def run(args):
     if args.verbose:
