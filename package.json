@@ -1,0 +1,25 @@
+{
+  "name": "passporteye",
+  "version": "2.0.0",
+  "author": "Konstantin Tretyakov <kt@ut.ee>",
+  "url": "https://github.com/konstantint/PassportEye",
+  "license": "MIT",
+  "description": "Extraction of machine-readable zone information from passports, visas and id-cards via OCR",
+  "keywords": [
+    "id-card",
+    "passport",
+    "image-processing",
+    "mrz",
+    "machine-readable-zone"
+  ],
+  "classifiers": [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Legal Industry",
+    "Intended Audience :: Financial and Insurance Industry"
+  ]
+}

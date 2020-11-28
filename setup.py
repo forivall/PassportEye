@@ -4,9 +4,8 @@ PassportEye: Python tools for image processing of identification documents
 Author: Konstantin Tretyakov
 License: MIT
 '''
-import sys
 from setuptools import setup, find_packages
-
+from setuptojson import MakePackageJsonCommand
 
 setup(name='PassportEye',
       version=[ln for ln in open("passporteye/__init__.py") if ln.startswith("__version__")][0].split('"')[1],
@@ -39,5 +38,8 @@ setup(name='PassportEye',
       entry_points={
           'console_scripts': ['evaluate_mrz=passporteye.mrz.scripts:evaluate_mrz',
                               'mrz=passporteye.mrz.scripts:mrz']
+      },
+      cmdclass={
+          'tojson': MakePackageJsonCommand
       }
      )
