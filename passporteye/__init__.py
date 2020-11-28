@@ -5,6 +5,6 @@ Author: Konstantin Tretyakov
 License: MIT
 '''
 
-__version__ = "2.1.0+extractroi"
+__version__ = "2.1.1+extractroi"
 
 from passporteye.mrz.parse import read_mrz
